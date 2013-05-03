@@ -13,7 +13,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         set :app_dist_dir, "#{dist_dir}/#{application}"
         set :full_date, Time.now.utc.strftime("%Y%m%d%H%M")
         set :description, "#{application} release - #{branch} #{full_date}"
-        set :testtasks, %w(testme1 testme2)
         set :build_vars, "true"
        
       end
@@ -109,6 +108,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     build_tasks=build.tasks.keys.map {|n| n="build:"+n.to_s}
+    
     # initialize things on build tasks.
     on :start, :only => [:build] do
       
