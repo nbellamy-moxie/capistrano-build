@@ -11,8 +11,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         set :index_base, "#{application}/indexes"
         set :index_dir, "#{dist_dir}/#{index_base}"
         set :app_dist_dir, "#{dist_dir}/#{application}"
-        set :full_date, Time.now.utc.strftime("%Y%m%d%H%M")
-        set :description, "#{application} release - #{branch} #{full_date}"
+        #set :full_date, Time.now.utc.strftime("%Y%m%d%H%M")
+        set :description, "#{application} release - #{branch} #{release_name}"
         set :build_vars, "true"
        
       end
@@ -41,11 +41,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         
         check_or_make_dir(package_dir)
         
-        set :package_name, "#{application}-#{branch}-#{full_date}.deb"
+        set :package_name, "#{application}-#{branch}-#{release_name}.deb"
         
         ignore=fpm_ignore.map{|a| "-x '**/#{a}'"}.join(', ')
         
-        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{branch} --iteration #{full_date} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
+        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{branch} --iteration #{release_name} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
       end
 
       task :update_repo, :roles => :build do
