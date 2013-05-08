@@ -11,8 +11,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         set :index_base, "#{application}/indexes"
         set :index_dir, "#{dist_dir}/#{index_base}"
         set :app_dist_dir, "#{dist_dir}/#{application}"
-        #set :full_date, Time.now.utc.strftime("%Y%m%d%H%M")
         set :description, "#{application} release - #{branch} #{release_name}"
+        set :release_path, "#{deploy_to}/releases/#{branch}-#{release_name}"
         set :build_vars, "true"
        
       end
@@ -108,9 +108,9 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     build_tasks=build.tasks.keys.map {|n| n="build:"+n.to_s}
-    
+    build_tasks << "build"
     # initialize things on build tasks.
-    on :start, :only => [:build] do
+    on :start, :only => build_tasks do
       
       if roles[:build].servers.empty?
         instance = ENV["instance"]
