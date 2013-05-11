@@ -87,7 +87,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :default, :roles => :build do
         get_code
         deploy.create_symlink
-        deploy.bundle_install   
+        bundle.install  
         build_tasks.each do |t| 
           
           if task_exists?(t)
