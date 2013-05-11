@@ -14,7 +14,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         set :description, "#{application} release - #{branch} #{release_name}"
         set :release_path, "#{deploy_to}/releases/#{branch}-#{release_name}"
         set :build_vars, "true"
-       
+        set :bundle_dir, "vendor/bundle"
       end
     end
 
@@ -87,7 +87,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :default, :roles => :build do
         get_code
         deploy.create_symlink
-        bundle.install   
+        deploy.bundle_install   
         build_tasks.each do |t| 
           
           if task_exists?(t)
