@@ -28,7 +28,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "get a tag or branch"
       task :get_code, :roles => :build do
         git_branch,git_remote=capture("git ls-remote #{repository} #{branch}").split()
-        run "if [ ! -d #{release_path} ];then git clone -q #{repository} #{release_path};if [ #{branch} ne 'master' ]; then cd #{release_path};git checkout #{git_branch} -q -b #{branch};fi ;fi"
+        run "if [ ! -d #{release_path} ];then git clone -q #{repository} #{release_path};if [ '#{branch}' != 'master' ]; then cd #{release_path};git checkout #{git_branch} -q -b #{branch};fi ;fi"
         run "cd #{release_path}; git pull origin #{git_remote} -q; git reset --hard #{git_branch};git submodule -q init  && git submodule -q update "
       end
 
