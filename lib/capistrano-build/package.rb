@@ -89,9 +89,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         deploy.create_symlink
         bundle.install  
         build_tasks.each do |t| 
-          
           if task_exists?(t)
-            eval(t) 
+            begin
+              eval(t)
+            rescue => e
+              puts "Error => #{e}"
+            end 
           else 
             puts "Task #{t} not found"
           end
