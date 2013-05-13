@@ -75,7 +75,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "clean up a packaged build"
       task :clean_package_build, :roles => :build do
         
-        run "rm -rf #{package_dir}/#{branch}"
+        run "rm -rf #{package_dir}"
         run "rm -rf #{index_dir}/#{branch}"
         run "s3cmd del s3://#{bucket}/dists/#{package_base}/ --recursive"
         run "s3cmd del s3://#{bucket}/dists/#{index_base}/#{branch}"
