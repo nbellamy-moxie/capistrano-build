@@ -41,7 +41,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         
         check_or_make_dir(package_dir)
         
-        set :package_name, "#{application}-#{branch}-#{release_name}.deb"
+        set :package_name, "#{application}-#{branch.gsub("-","_")}-#{release_name}.deb"
         
         ignore=fpm_ignore.map{|a| "-x '**/#{a}'"}.join(', ')
         
