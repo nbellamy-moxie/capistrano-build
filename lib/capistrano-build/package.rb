@@ -45,7 +45,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         
         ignore=fpm_ignore.map{|a| "-x '**/#{a}'"}.join(', ')
         
-        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{branch} --iteration #{release_name} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
+        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{branch.gsub("-","_")} --iteration #{release_name} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
       end
 
       task :update_repo, :roles => :build do
