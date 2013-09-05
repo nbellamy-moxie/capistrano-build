@@ -6,13 +6,14 @@ Capistrano::Configuration.instance(:must_exist).load do
         set :arch, capture('dpkg --print-architecture').chomp
         set :binary_base, "#{application}/main/binary-#{arch}"
         set :binary_dir, "#{dist_dir}/#{binary_base}"
-        set :package_base, "pool/#{application}/#{branch}"
+        set :pname, "#{branch.gsub("-","_")}"
+        set :package_base, "pool/#{application}/#{pname}"
         set :package_dir, "#{dist_dir}/#{package_base}"
         set :index_base, "#{application}/indexes"
         set :index_dir, "#{dist_dir}/#{index_base}"
         set :app_dist_dir, "#{dist_dir}/#{application}"
-        set :description, "#{application} release - #{branch} #{release_name}"
-        set :release_path, "#{deploy_to}/releases/#{branch}-#{release_name}"
+        set :description, "#{application} release - #{pname} #{release_name}"
+        set :release_path, "#{deploy_to}/releases/#{pname}-#{release_name}"
         set :build_vars, "true"
         set :bundle_dir, "vendor/bundle"
       end
@@ -41,11 +42,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         
         check_or_make_dir(package_dir)
         
-        set :package_name, "#{application}-#{branch.gsub("-","_")}-#{release_name}.deb"
+        set :package_name, "#{application}-#{pname}-#{release_name}.deb"
         
         ignore=fpm_ignore.map{|a| "-x '**/#{a}'"}.join(', ')
         
-        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{branch.gsub("-","_")} --iteration #{release_name} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
+        run "if [ ! -f #{package_dir}/#{package_name} ];then fpm -t deb -s dir -a #{arch} -n #{application} -v #{pname} --iteration #{release_name} -p #{package_dir}/#{package_name} #{ignore} -m #{creator} --description '#{description}' #{release_path}; fi"
       end
 
       task :update_repo, :roles => :build do
@@ -59,7 +60,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         releases = capture("ls -xt #{package_dir}").split.reverse
         d = (releases - releases.last(count)).map{ |r| File.join(package_dir, r )}.join(" ")
         try_sudo "rm #{d}" unless d.empty?
-        run "cd /mnt/builds/;dpkg-scanpackages -m dists/#{package_base} /dev/null > #{index_dir}/#{branch}"
+        run "cd /mnt/builds/;dpkg-scanpackages -m dists/#{package_base} /dev/null > #{index_dir}/#{pname}"
         run "s3cmd sync #{package_dir}/* s3://#{bucket}/dists/#{package_base}/ --delete-removed"
         packages_file
       end
